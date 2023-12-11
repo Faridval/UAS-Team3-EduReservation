@@ -146,4 +146,48 @@ while (1) {
                     if (scheduleChoice < 1 || scheduleChoice > MAX_SCHEDULES) {
                         printf("Pilihan waktu tidak valid.\n");
                         continue;
+                    } 
+             struct Booking newBooking;
+                    switch (roomChoice) {
+                        case 1:
+                            sprintf(newBooking.room, "MKB 1A");
+                            break;
+                        case 2:
+                            sprintf(newBooking.room, "MKB 1B");
+                            break;
+                        case 3:
+                            sprintf(newBooking.room, "MKB 1C");
+                            break;
+                        case 4:
+                            sprintf(newBooking.room, "LAB");
+                            break;
+                        case 5:
+                            sprintf(newBooking.room, "SMARTCLASS");
+                            break;
+                        case 6:
+                            sprintf(newBooking.room, "MKB 30");
+                            break;
+                    }
+
+                    switch (scheduleChoice) {
+                        case 1:
+                            sprintf(newBooking.schedule, "Senin 7:00-09:30");
+                            break;
+                        case 2:
+                            sprintf(newBooking.schedule, "Senin 9:30-11:10");
+                            break;
+                        case 3:
+                            sprintf(newBooking.schedule, "Senin 11:10-13:00");
+                            break;
+                        case 4:
+                            sprintf(newBooking.schedule, "Senin 13:00-15:30");
+                            break;
+                        case 5:
+                            sprintf(newBooking.schedule, "Senin 15:30-17:10");
+                            break;
+                        case 6: {
+                            printf("Masukkan waktu khusus (contoh: Selasa 10:00-12:00): ");
+                            scanf(" %[^\n]s", newBooking.schedule);
+                            break;
+                        }
                     }
