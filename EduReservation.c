@@ -17,6 +17,7 @@ struct Booking {
 };
 
 struct User {
+    char username[MAX_USERNAME_LENGTH];
     char nim[MAX_NIM_LENGTH];
     char password[MAX_PASSWORD_LENGTH];
     struct Booking bookings[MAX_BOOKINGS];
@@ -60,11 +61,11 @@ void displayPersonalSchedule(const struct User* user) {
 
 void displayAvailableSchedules() {
     printf("\nPilihan jadwal:\n");
-    printf("1. Senin  07:00-09:30\n");
-    printf("2. Senin  09:30-11:10\n");
-    printf("3. Senin  11:10-13:00\n");
-    printf("4. Senin  13:00-15:00\n");
-    printf("5. Senin  15:30-17:10\n");
+    printf("1. 07:00-09:30\n");
+    printf("2. 09:30-11:10\n");
+    printf("3. 11:10-13:00\n");
+    printf("4. 13:00-15:00\n");
+    printf("5. 15:30-17:10\n");
     printf("6. Waktu khusus\n");
 }
 
@@ -104,7 +105,7 @@ int main() {
             // User not found, create new user
             if (userCount < MAX_BOOKINGS) {
                 struct User newUser;
-                sprintf(newUser.nim, "%s", nim);
+                sprintf(newUser.nim, "%s", username);
                 sprintf(newUser.password, "%s", password);
                 newUser.bookingCount = 0;
 
@@ -181,23 +182,23 @@ while (1) {
 
                     switch (scheduleChoice) {
                         case 1:
-                            sprintf(newBooking.schedule, "Senin 7:00-09:30");
+                            sprintf(newBooking.schedule, "7:00-09:30");
                             break;
                         case 2:
-                            sprintf(newBooking.schedule, "Senin 9:30-11:10");
+                            sprintf(newBooking.schedule, "9:30-11:10");
                             break;
                         case 3:
-                            sprintf(newBooking.schedule, "Senin 11:10-13:00");
+                            sprintf(newBooking.schedule, "11:10-13:00");
                             break;
                         case 4:
-                            sprintf(newBooking.schedule, "Senin 13:00-15:30");
+                            sprintf(newBooking.schedule, "13:00-15:30");
                             break;
                         case 5:
-                            sprintf(newBooking.schedule, "Senin 15:30-17:10");
+                            sprintf(newBooking.schedule, "15:30-17:10");
                             break;
                         case 6: {
                             printf("Masukkan waktu khusus (contoh: Selasa 10:00-12:00): ");
-                            scanf(" %[^\n]s", newBooking.schedule);
+                            scanf(" %s", newBooking.schedule);
                             break;
                         }
                     }
@@ -247,20 +248,27 @@ while (1) {
                         break;
                     }
                     case 5: {
-                        printf("Logout berhasil. Sampai jumpa, %s!\n", nim);
-                        break;
+                       int Logout;
+                        printf("Logout berhasil");
+                        printf("Apakah ingin keluar atau login?\n");
+                        printf("1. Login\n");
+                        printf("2. Exit\n");
+                        scanf("%d",&Logout);
+                        if (Logout==1)
+                        {
+                            goto Login;
+                        }
+                        else if(Logout==2){
+                            break;
+                        }
                     }
                     default: {
                         printf("Pilihan tidak valid. Silakan pilih 1-5.\n");
                         break;
                     }
-                }
-    
-                if (choice == 5) {
-                    break; // Logout
-                }
             }
         }
 
     return 0;
+}
 }
