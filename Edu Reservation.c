@@ -74,3 +74,40 @@ int main() {
     while (1) {
         char nim[MAX_NIM_LENGTH];
         char password[MAX_PASSWORD_LENGTH];
+
+// Login
+        printf("\nLogin:\n");
+        printf("Masukkan NIM (20/21/22/23XXXX): ");
+        scanf("%s", nim);
+
+        if (!isValidNIM(nim)) {
+            printf("Login gagal. NIM tidak valid.\n");
+            continue;
+        }
+
+        printf("Masukkan password: ");
+        scanf("%s", password);
+
+        int userIndex = findUser(nim, users, userCount);
+
+        if (userIndex == -1) {
+            // User not found, create new user
+            if (userCount < MAX_BOOKINGS) {
+                struct User newUser;
+                sprintf(newUser.nim, "%s", nim);
+                sprintf(newUser.password, "%s", password);
+                newUser.bookingCount = 0;
+
+                users[userCount] = newUser;
+                userCount++;
+
+                printf("Login berhasil! Selamat datang, %s.\n", nim);
+                userIndex = userCount - 1;
+            } else {
+                printf("Jumlah pengguna sudah mencapai batas maksimal.\n");
+                continue;
+            }
+        } else if (strcmp(users[userIndex].password, password) != 0) {
+            printf("Login gagal. Password salah.\n");
+            continue;
+        }
