@@ -191,3 +191,66 @@ while (1) {
                             break;
                         }
                     }
+                    if (users[userIndex].bookingCount < MAX_BOOKINGS) {
+                        users[userIndex].bookings[users[userIndex].bookingCount++] = newBooking;
+                        printf("Booking berhasil!\n");
+                    } else {
+                        printf("Jumlah booking Anda sudah mencapai batas maksimal.\n");
+                    }
+
+                    break;
+                    }
+                    case 2: {
+                        // Lihat jadwal kelas tersedia
+                        displaySchedule();
+                        displayAvailableSchedules();
+                        break;
+                    }
+                    case 3: {
+                        // Lihat jadwal pribadi
+                        displayPersonalSchedule(&users[userIndex]);
+                        break;
+                    }
+                    case 4: {
+                        // Pembatalan booking kelas
+                        printf("Jadwal kelas yang sudah dibooking:\n");
+                        displayPersonalSchedule(&users[userIndex]);
+    
+                        if (users[userIndex].bookingCount > 0) {
+                            printf("Pilih nomor booking yang ingin dibatalkan (1-%d): ", users[userIndex].bookingCount);
+                            int cancelChoice;
+                            scanf("%d", &cancelChoice);
+    
+                            if (cancelChoice >= 1 && cancelChoice <= users[userIndex].bookingCount) {
+                                for (int i = cancelChoice - 1; i < users[userIndex].bookingCount - 1; ++i) {
+                                    users[userIndex].bookings[i] = users[userIndex].bookings[i + 1];
+                                }
+                                users[userIndex].bookingCount--;
+                                printf("Booking berhasil dibatalkan.\n");
+                            } else {
+                                printf("Nomor booking tidak valid.\n");
+                            }
+                        } else {
+                            printf("Anda belum melakukan booking.\n");
+                        }
+    
+                        break;
+                    }
+                    case 5: {
+                        printf("Logout berhasil. Sampai jumpa, %s!\n", nim);
+                        break;
+                    }
+                    default: {
+                        printf("Pilihan tidak valid. Silakan pilih 1-5.\n");
+                        break;
+                    }
+                }
+    
+                if (choice == 5) {
+                    break; // Logout
+                }
+            }
+        }
+
+    return 0;
+}
