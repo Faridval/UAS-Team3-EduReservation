@@ -7,6 +7,7 @@
 #define MAX_SCHEDULES 6
 #define MAX_BOOKINGS 10
 #define MAX_NIM_LENGTH 15
+#define MAX_USERNAME_LENGTH 20
 #define MAX_PASSWORD_LENGTH 20
 #define MAX_CUSTOM_SCHEDULE_LENGTH 30
 
@@ -74,9 +75,18 @@ int main() {
     while (1) {
         char nim[MAX_NIM_LENGTH];
         char password[MAX_PASSWORD_LENGTH];
+        char username[MAX_USERNAME_LENGTH];
+        // Login
+        printf("=========================================================================================================\n");
+        printf("\t\t\t\t        PROGRAM BOOKING KELAS \n");
+        printf("\t\t\t\t  UNIVERSITAS PENDIDIKAN INDONESISA \n");
+        printf("\t\t\t\t          KAMPUS PURWAKARTA \n");
+        printf("=========================================================================================================\n\n");
 
-// Login
         printf("\nLogin:\n");
+        printf("Masukkan Username: ");
+        scanf("%s", username);
+        
         printf("Masukkan NIM (20/21/22/23XXXX): ");
         scanf("%s", nim);
 
