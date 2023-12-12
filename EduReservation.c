@@ -205,6 +205,7 @@ while (1) {
                     if (users[userIndex].bookingCount < MAX_BOOKINGS) {
                         users[userIndex].bookings[users[userIndex].bookingCount++] = newBooking;
                         printf("Booking berhasil!\n");
+                        goto menu;
                     } else {
                         printf("Jumlah booking Anda sudah mencapai batas maksimal.\n");
                     }
@@ -213,13 +214,39 @@ while (1) {
                     }
                     case 2: {
                         // Lihat jadwal kelas tersedia
+                        jadwal:
+                        int backToMenu;
                         displaySchedule();
                         displayAvailableSchedules();
-                        break;
+                        printf("Apakah ingin kembali ke menu?\n");
+                        printf("1. Ya\n");
+                        printf("2. Tidak\n");
+                        scanf("%d", &backToMenu);
+                        if (backToMenu == 1)
+                        {
+                           goto menu;
+                        }
+                        else if (backToMenu ==2)
+                        {
+                            goto jadwal;
+                        }
                     }
                     case 3: {
                         // Lihat jadwal pribadi
+                        int backToMenu;
                         displayPersonalSchedule(&users[userIndex]);
+                        printf("Apakah ingin kembali ke menu?\n");
+                        printf("1. Ya\n");
+                        printf("2. Tidak\n");
+                        scanf("%d", &backToMenu);
+                        if (backToMenu == 1)
+                        {
+                           goto menu;
+                        }
+                        else if (backToMenu ==2)
+                        {
+                            goto jadwal;
+                        }
                         break;
                     }
                     case 4: {
@@ -238,11 +265,13 @@ while (1) {
                                 }
                                 users[userIndex].bookingCount--;
                                 printf("Booking berhasil dibatalkan.\n");
+                                goto menu;
                             } else {
                                 printf("Nomor booking tidak valid.\n");
                             }
                         } else {
                             printf("Anda belum melakukan booking.\n");
+                            goto menu;
                         }
     
                         break;
