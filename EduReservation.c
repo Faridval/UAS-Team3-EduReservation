@@ -78,6 +78,7 @@ int main() {
         char password[MAX_PASSWORD_LENGTH];
         char username[MAX_USERNAME_LENGTH];
         // Login
+        login:
         printf("=========================================================================================================\n");
         printf("\t\t\t\t        PROGRAM BOOKING KELAS \n");
         printf("\t\t\t\t  UNIVERSITAS PENDIDIKAN INDONESISA \n");
@@ -122,8 +123,8 @@ int main() {
             printf("Login gagal. Password salah.\n");
             continue;
         }
-while (1) {
             // Display menu
+            menu:
             printf("\nMenu:\n");
             printf("1. Booking kelas\n");
             printf("2. Lihat jadwal kelas tersedia\n");
@@ -285,7 +286,7 @@ while (1) {
                         scanf("%d",&Logout);
                         if (Logout==1)
                         {
-                            goto Login;
+                            goto login;
                         }
                         else if(Logout==2){
                             break;
