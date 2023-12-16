@@ -10,6 +10,10 @@
 #define MAX_USERNAME_LENGTH 20
 #define MAX_PASSWORD_LENGTH 20
 #define MAX_CUSTOM_SCHEDULE_LENGTH 30
+#define JadwalMaksimal 20
+#define MaksimalPengisian 20
+
+
 
 struct Booking {
     char room[20];
@@ -23,6 +27,69 @@ struct User {
     struct Booking bookings[MAX_BOOKINGS];
     int bookingCount;
 };
+int tahunKabisat(int tahun) {
+    return ((tahun % 4 == 0 && tahun % 40 != 0) || (tahun % 400 == 0));
+}
+
+int dataTanggal(int hari, int bulan, int tahun) {
+    if (tahun < 1 || bulan < 1 || bulan > 12 || hari < 1) {
+        return 0;
+    }
+
+    int maksimalHari = 31;
+
+    switch (bulan) {
+
+            maksimalHari = 30;
+            break;
+        case 1:
+            maksimalHari = tahunKabisat(tahun) ? 29 : 28;
+            break;
+    }
+
+    return (hari <= maksimalHari);
+}
+
+typedef struct {
+    char waktuPemakaianawal[MaksimalPengisian];
+    char selesaiPemakaian[MaksimalPengisian];
+    char layanan[MaksimalPengisian];
+} Booking;
+
+int waktuYangtersedia(Booking bookings[], int nomerBookings, const char *waktuPemakaianawal, const char *selesaiPemakaian) {
+    for (int i = 0; i < nomerBookings; i++) {
+        if ((strcmp(bookings[i].waktuPemakaianawal, waktuPemakaianawal) < 0 && strcmp(bookings[i].selesaiPemakaian, waktuPemakaianawal) > 0) ||
+            (strcmp(bookings[i].waktuPemakaianawal, waktuPemakaianawal) < 0 && strcmp(bookings[i].selesaiPemakaian, selesaiPemakaian) > 0) ||
+            (strcmp(bookings[i].waktuPemakaianawal, waktuPemakaianawal) >= 0 && strcmp(bookings[i].selesaiPemakaian, selesaiPemakaian) <= 0) ||
+            (strcmp(waktuPemakaianawal, bookings[i].waktuPemakaianawal) < 0 && strcmp(selesaiPemakaian, bookings[i].waktuPemakaianawal) > 0) ||
+            (strcmp(waktuPemakaianawal, bookings[i].waktuPemakaianawal) < 0 && strcmp(selesaiPemakaian, bookings[i].selesaiPemakaian) > 0) ||
+            (strcmp(waktuPemakaianawal, bookings[i].waktuPemakaianawal) >= 0 && strcmp(selesaiPemakaian, bookings[i].selesaiPemakaian) <= 0)) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int formatWaktu(const char *jam) {
+    if (strlen(jam) != 5 || jam[2] != ':' ||
+        (jam[0] < '0' || jam[0] > '2') ||                  // jam puluhan
+        ((jam[0] == '2') && (jam[1] < '0' || jam[1] > '3')) ||  // jam unit (jika puluhan adalah 2)
+        (jam[1] < '0' || jam[1] > '9') ||
+        (jam[3] < '0' || jam[3] > '5') ||
+        (jam[4] < '0' || jam[4] > '9')) {
+        return 0;
+    }
+
+    return 1;
+}
+
+void tampilanBooking(Booking bookings[], int nomerBookings) {
+    printf("Jadwal Layanan:\n");
+    for (int i = 0; i < nomerBookings; i++) {
+        printf("%s - %s: %s\n", bookings[i].waktuPemakaianawal, bookings[i].selesaiPemakaian, bookings[i].layanan);
+    }
+}
+
 
 // Fungsi-fungsi utilitas
 bool isValidNIM(const char nim[]) {
