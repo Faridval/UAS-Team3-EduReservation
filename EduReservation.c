@@ -14,8 +14,7 @@
 #define MaksimalPengisian 20
 
 
-
-struct Booking {
+struct room {
     char room[20];
     char schedule[30];
 };
@@ -24,7 +23,7 @@ struct User {
     char username[MAX_USERNAME_LENGTH];
     char nim[MAX_NIM_LENGTH];
     char password[MAX_PASSWORD_LENGTH];
-    struct Booking bookings[MAX_BOOKINGS];
+    struct room bookings[MAX_BOOKINGS];
     int bookingCount;
 };
 int tahunKabisat(int tahun) {
@@ -91,8 +90,12 @@ void tampilanBooking(Booking bookings[], int nomerBookings) {
 }
 
 
-// Fungsi-fungsi utilitas
+
 bool isValidNIM(const char nim[]) {
+    if (strlen(nim) < 2) {
+        return false;
+    }
+
     char prefix[3];
     strncpy(prefix, nim, 2);
     prefix[2] = '\0';
@@ -119,7 +122,8 @@ void displaySchedule() {
     printf("5. MKB 29\n");
     printf("6. MKB 30\n");
 }
-void displayPersonalSchedule(const struct User* user) {
+
+void displayPersonalSchedule(const struct User *user) {
     printf("\nJadwal kelas Anda:\n");
     for (int i = 0; i < user->bookingCount; ++i) {
         printf("Ruangan: %s, %s\n", user->bookings[i].room, user->bookings[i].schedule);
@@ -127,25 +131,169 @@ void displayPersonalSchedule(const struct User* user) {
 }
 
 void displayAvailableSchedules() {
-    printf("\nPilihan jadwal:\n");
-    printf("1. 07:00-09:30\n");
-    printf("2. 09:30-11:10\n");
-    printf("3. 11:10-13:00\n");
-    printf("4. 13:00-15:00\n");
-    printf("5. 15:30-17:10\n");
-    printf("6. Waktu khusus\n");
+
+    printf("| %-10s | %-10s | %-10s | %-10s | %-15s |\n", " Ruang ", " Kelas ", " waktu " , " tanggal ", "Penggunaan");
+    printf("|------------|------------|------------|------------|------------|\n");
+    printf("| %-10s | %-10s | %-10s | %-10s | %-15s |\n", " Ruang ", " Kelas ", " waktu " , " tanggal ");
+    
+}
+
+void bookingKelas(struct User *user) {
+    if (user->bookingCount < MAX_BOOKINGS) {
+        displaySchedule();
+        printf("Pilih ruangan (1-6): ");
+        int roomChoice;
+        scanf("%d", &roomChoice);
+
+        if (roomChoice < 1 || roomChoice > MAX_ROOMS) {
+            printf("Pilihan ruangan tidak valid.\n");
+            return;
+        }
+
+         int hari, bulan, tahun;
+
+    do {
+        printf("Masukkan tanggal (hari bulan tahun) dalam format 'DD MM YYYY': ");
+        int hasil = scanf("%d %d %d", &hari, &bulan, &tahun);
+
+        // Mengecek apakah input sesuai dengan format yang benar
+        if (hasil != 3 || getchar() != '\n' || !dataTanggal(hari, bulan, tahun)) {
+            printf("Format tanggal tidak sesuai. Silakan coba lagi.\n");
+
+            // Membersihkan input buffer
+            while (getchar() != '\n');
+        } else {
+            break; // Format tanggal benar, keluar dari loop
+        }
+    } while (1);
+
+    printf("Tanggal yang dimasukkan: %02d/%02d/%04d\n", hari, bulan, tahun);
+
+    //waktu
+    Booking bookings[JadwalMaksimal];
+    int nomerBookings = 0;
+
+    while (1) {
+        char masukkanWaktuawal[MaksimalPengisian];
+        char masukkanWaktuakhir[MaksimalPengisian];
+        char masukkanLayanan[MaksimalPengisian];
+
+        printf("Masukkan waktu awal (HH:MM): ");
+        scanf("%s", masukkanWaktuawal);
+
+        if (!formatWaktu(masukkanWaktuawal)) {
+            printf("Format waktu tidak sesuai. Silakan masukkan waktu dalam format HH:MM.\n");
+            continue;
+        }
+
+        printf("Masukkan waktu akhir (HH:MM): ");
+        scanf("%s", masukkanWaktuakhir);
+
+        if (!formatWaktu(masukkanWaktuakhir)) {
+            printf("Format waktu tidak sesuai. Silakan masukkan waktu dalam format HH:MM.\n");
+            continue;
+        } else if (strcmp(masukkanWaktuawal, masukkanWaktuakhir) >= 0) {
+            printf("Waktu akhir harus setelah waktu awal.\n");
+            continue;
+        } else if (!waktuYangtersedia(bookings, nomerBookings, masukkanWaktuawal, masukkanWaktuakhir)) {
+            printf("Jadwal pada waktu tersebut sudah ter Booking.\n");
+            continue;
+        }
+
+        printf("Keperluan Pemakaian Kelas : ");
+        scanf("%s", masukkanLayanan);
+
+        if (nomerBookings < JadwalMaksimal) {
+            strcpy(bookings[nomerBookings].waktuPemakaianawal, masukkanWaktuawal);
+            strcpy(bookings[nomerBookings].selesaiPemakaian, masukkanWaktuakhir);
+            strcpy(bookings[nomerBookings].layanan, masukkanLayanan);
+            nomerBookings++;
+        } else {
+            printf("Maksimum jadwal layanan telah tercapai.\n");
+            break;
+        }
+
+        tampilanBooking(bookings, nomerBookings);
+
+        char anotherBooking;
+        printf("Lakukan pemesanan layanan lagi? (y/n): ");
+        scanf(" %c", &anotherBooking);
+
+        if (anotherBooking != 'y' && anotherBooking != 'Y') {
+            break;
+        }
+    }
+
+
+        struct room newBooking;
+        switch (roomChoice) {
+            case 1:
+                sprintf(newBooking.room, "MKB 1A");
+                break;
+            case 2:
+                sprintf(newBooking.room, "MKB 1B");
+                break;
+            case 3:
+                sprintf(newBooking.room, "MKB 1C");
+                break;
+            case 4:
+                sprintf(newBooking.room, "LAB");
+                break;
+            case 5:
+                sprintf(newBooking.room, "MKB 29");
+                break;
+            case 6:
+                sprintf(newBooking.room, "MKB 30");
+                break;
+        }
+
+        
+
+        user->bookings[user->bookingCount++] = newBooking;
+        printf("Booking berhasil!\n");
+    } else {
+        printf("Jumlah booking Anda sudah mencapai batas maksimal.\n");
+    }
+}
+
+void pembatalanBooking(struct User *user) {
+    if (user->bookingCount > 0) {
+        printf("Jadwal kelas yang sudah dibooking:\n");
+        displayPersonalSchedule(user);
+
+        printf("Pilih nomor booking yang ingin dibatalkan (1-%d): ", user->bookingCount);
+        int cancelChoice;
+        scanf("%d", &cancelChoice);
+
+        if (cancelChoice >= 1 && cancelChoice <= user->bookingCount) {
+            for (int i = cancelChoice - 1; i < user->bookingCount - 1; ++i) {
+                user->bookings[i] = user->bookings[i + 1];
+            }
+            user->bookingCount--;
+            printf("Booking berhasil dibatalkan.\n");
+        } else {
+            printf("Nomor booking tidak valid.\n");
+        }
+    } else {
+        printf("Anda belum melakukan booking.\n");
+    }
+}
+
+int logout() {
+    printf("Logout berhasil\n");
+    return 0; // Kembali ke tahap login
 }
 
 int main() {
     struct User users[MAX_BOOKINGS];
     int userCount = 0;
 
-    while (1) {
+    int loggedIn = 1;
+    while (loggedIn) {
         char nim[MAX_NIM_LENGTH];
         char password[MAX_PASSWORD_LENGTH];
         char username[MAX_USERNAME_LENGTH];
-        // Login
-        login:
+
         printf("=========================================================================================================\n");
         printf("\t\t\t\t        PROGRAM BOOKING KELAS \n");
         printf("\t\t\t\t  UNIVERSITAS PENDIDIKAN INDONESISA \n");
@@ -155,7 +303,7 @@ int main() {
         printf("\nLogin:\n");
         printf("Masukkan Username: ");
         scanf("%s", username);
-        
+
         printf("Masukkan NIM (20/21/22/23XXXX): ");
         scanf("%s", nim);
 
@@ -180,7 +328,7 @@ int main() {
                 users[userCount] = newUser;
                 userCount++;
 
-                printf("Login berhasil! Selamat datang, %s.\n", nim);
+                printf("Login berhasil! Selamat datang, %s.\n", username);
                 userIndex = userCount - 1;
             } else {
                 printf("Jumlah pengguna sudah mencapai batas maksimal.\n");
@@ -190,8 +338,9 @@ int main() {
             printf("Login gagal. Password salah.\n");
             continue;
         }
-            // Display menu
-            menu:
+
+        int choice;
+        while (1) {
             printf("\nMenu:\n");
             printf("1. Booking kelas\n");
             printf("2. Lihat jadwal kelas tersedia\n");
@@ -199,174 +348,35 @@ int main() {
             printf("4. Pembatalan booking kelas\n");
             printf("5. Logout\n");
             printf("Pilih menu (1-5): ");
-
-            int choice;
             scanf("%d", &choice);
 
             switch (choice) {
-                case 1: {
-                    // Booking kelas
-                    displaySchedule();
-                    printf("Pilih ruangan (1-6): ");
-                    int roomChoice;
-                    scanf("%d", &roomChoice);
-
-                    if (roomChoice < 1 || roomChoice > MAX_ROOMS) {
-                        printf("Pilihan ruangan tidak valid.\n");
-                        continue;
-                    }
-
-                    printf("Pilih jadwal:\n");
-                    displayAvailableSchedules();
-                    printf("Pilih waktu (1-6): ");
-                    int scheduleChoice;
-                    scanf("%d", &scheduleChoice);
-
-                    if (scheduleChoice < 1 || scheduleChoice > MAX_SCHEDULES) {
-                        printf("Pilihan waktu tidak valid.\n");
-                        continue;
-                    } 
-             struct Booking newBooking;
-                    switch (roomChoice) {
-                        case 1:
-                            sprintf(newBooking.room, "MKB 1A");
-                            break;
-                        case 2:
-                            sprintf(newBooking.room, "MKB 1B");
-                            break;
-                        case 3:
-                            sprintf(newBooking.room, "MKB 1C");
-                            break;
-                        case 4:
-                            sprintf(newBooking.room, "LAB");
-                            break;
-                        case 5:
-                            sprintf(newBooking.room, "SMARTCLASS");
-                            break;
-                        case 6:
-                            sprintf(newBooking.room, "MKB 30");
-                            break;
-                    }
-
-                    switch (scheduleChoice) {
-                        case 1:
-                            sprintf(newBooking.schedule, "7:00-09:30");
-                            break;
-                        case 2:
-                            sprintf(newBooking.schedule, "9:30-11:10");
-                            break;
-                        case 3:
-                            sprintf(newBooking.schedule, "11:10-13:00");
-                            break;
-                        case 4:
-                            sprintf(newBooking.schedule, "13:00-15:30");
-                            break;
-                        case 5:
-                            sprintf(newBooking.schedule, "15:30-17:10");
-                            break;
-                        case 6: {
-                            printf("Masukkan waktu khusus (contoh: Selasa 10:00-12:00): ");
-                            scanf(" %s", newBooking.schedule);
-                            break;
-                        }
-                    }
-                    if (users[userIndex].bookingCount < MAX_BOOKINGS) {
-                        users[userIndex].bookings[users[userIndex].bookingCount++] = newBooking;
-                        printf("Booking berhasil!\n");
-                        goto menu;
-                    } else {
-                        printf("Jumlah booking Anda sudah mencapai batas maksimal.\n");
-                    }
-
+                case 1:
+                    bookingKelas(&users[userIndex]);
                     break;
-                    }
-                    case 2: {
-                        // Lihat jadwal kelas tersedia
-                        jadwal:
-                        int backToMenu;
-                        displaySchedule();
-                        displayAvailableSchedules();
-                        printf("Apakah ingin kembali ke menu?\n");
-                        printf("1. Ya\n");
-                        printf("2. Tidak\n");
-                        scanf("%d", &backToMenu);
-                        if (backToMenu == 1)
-                        {
-                           goto menu;
-                        }
-                        else if (backToMenu ==2)
-                        {
-                            goto jadwal;
-                        }
-                    }
-                    case 3: {
-                        // Lihat jadwal pribadi
-                        int backToMenu;
-                        displayPersonalSchedule(&users[userIndex]);
-                        printf("Apakah ingin kembali ke menu?\n");
-                        printf("1. Ya\n");
-                        printf("2. Tidak\n");
-                        scanf("%d", &backToMenu);
-                        if (backToMenu == 1)
-                        {
-                           goto menu;
-                        }
-                        else if (backToMenu ==2)
-                        {
-                            goto jadwal;
-                        }
-                        break;
-                    }
-                    case 4: {
-                        // Pembatalan booking kelas
-                        printf("Jadwal kelas yang sudah dibooking:\n");
-                        displayPersonalSchedule(&users[userIndex]);
-    
-                        if (users[userIndex].bookingCount > 0) {
-                            printf("Pilih nomor booking yang ingin dibatalkan (1-%d): ", users[userIndex].bookingCount);
-                            int cancelChoice;
-                            scanf("%d", &cancelChoice);
-    
-                            if (cancelChoice >= 1 && cancelChoice <= users[userIndex].bookingCount) {
-                                for (int i = cancelChoice - 1; i < users[userIndex].bookingCount - 1; ++i) {
-                                    users[userIndex].bookings[i] = users[userIndex].bookings[i + 1];
-                                }
-                                users[userIndex].bookingCount--;
-                                printf("Booking berhasil dibatalkan.\n");
-                                goto menu;
-                            } else {
-                                printf("Nomor booking tidak valid.\n");
-                            }
-                        } else {
-                            printf("Anda belum melakukan booking.\n");
-                            goto menu;
-                        }
-    
-                        break;
-                    }
-                    case 5: {
-                       int Logout;
-                        printf("Logout berhasil");
-                        printf("Apakah ingin keluar atau login?\n");
-                        printf("1. Login\n");
-                        printf("2. Exit\n");
-                        scanf("%d",&Logout);
-                        if (Logout==1)
-                        {
-                            goto login;
-                        }
-                        else if(Logout==2){
-                            break;
-                        }
-                    }
-                    default: {
-                        printf("Pilihan tidak valid. Silakan pilih 1-5.\n");
-                        break;
-                    }
+                case 2:
+                    displaySchedule();
+                    displayAvailableSchedules();
+                    break;
+                case 3:
+                    displayPersonalSchedule(&users[userIndex]);
+                    break;
+                case 4:
+                    pembatalanBooking(&users[userIndex]);
+                    break;
+                case 5:
+                    loggedIn = logout();
+                    break;
+                default:
+                    printf("Pilihan tidak valid. Silakan pilih 1-5.\n");
+                    break;
+            }
+
+            if (!loggedIn) {
+                break; // Keluar dari loop menu jika sudah logout
             }
         }
+    }
 
     return 0;
 }
-
-
