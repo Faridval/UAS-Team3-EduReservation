@@ -13,17 +13,18 @@
 #define JadwalMaksimal 20
 #define MaksimalPengisian 20
 
-
-struct room {
-    char room[20];
-    char schedule[30];
-};
+typedef struct pesan{
+    char waktuPemakaianawal[MaksimalPengisian];
+    char selesaiPemakaian[MaksimalPengisian];
+    char layanan[MaksimalPengisian];
+    char room[MAX_BOOKINGS];
+}Booking;
 
 struct User {
     char username[MAX_USERNAME_LENGTH];
     char nim[MAX_NIM_LENGTH];
     char password[MAX_PASSWORD_LENGTH];
-    struct room bookings[MAX_BOOKINGS];
+    struct  pesan bookings[MAX_BOOKINGS];
     int bookingCount;
 };
 int tahunKabisat(int tahun) {
@@ -49,11 +50,7 @@ int dataTanggal(int hari, int bulan, int tahun) {
     return (hari <= maksimalHari);
 }
 
-typedef struct {
-    char waktuPemakaianawal[MaksimalPengisian];
-    char selesaiPemakaian[MaksimalPengisian];
-    char layanan[MaksimalPengisian];
-} Booking;
+
 
 int waktuYangtersedia(Booking bookings[], int nomerBookings, const char *waktuPemakaianawal, const char *selesaiPemakaian) {
     for (int i = 0; i < nomerBookings; i++) {
@@ -126,16 +123,8 @@ void displaySchedule() {
 void displayPersonalSchedule(const struct User *user) {
     printf("\nJadwal kelas Anda:\n");
     for (int i = 0; i < user->bookingCount; ++i) {
-        printf("Ruangan: %s, %s\n", user->bookings[i].room, user->bookings[i].schedule);
+        printf("Ruangan: %s, %s\n", user->bookings[i].room);
     }
-}
-
-void displayAvailableSchedules() {
-
-    printf("| %-10s | %-10s | %-10s | %-10s | %-15s |\n", " Ruang ", " Kelas ", " waktu " , " tanggal ", "Penggunaan");
-    printf("|------------|------------|------------|------------|------------|\n");
-    printf("| %-10s | %-10s | %-10s | %-10s | %-15s |\n", " Ruang ", " Kelas ", " waktu " , " tanggal ");
-    
 }
 
 void bookingKelas(struct User *user) {
@@ -169,7 +158,6 @@ void bookingKelas(struct User *user) {
 
     printf("Tanggal yang dimasukkan: %02d/%02d/%04d\n", hari, bulan, tahun);
 
-    //waktu
     Booking bookings[JadwalMaksimal];
     int nomerBookings = 0;
 
@@ -223,9 +211,10 @@ void bookingKelas(struct User *user) {
             break;
         }
     }
+    
 
 
-        struct room newBooking;
+        struct pesan newBooking;
         switch (roomChoice) {
             case 1:
                 sprintf(newBooking.room, "MKB 1A");
@@ -255,6 +244,22 @@ void bookingKelas(struct User *user) {
         printf("Jumlah booking Anda sudah mencapai batas maksimal.\n");
     }
 }
+
+void displayAvailableSchedules(struct User *user, Booking *booking) {
+
+    printf("|----------------------------------------------------------------|\n");
+    printf("| %-10s | %-10s | %-10s | %-10s | %-10s |\n", " Ruang ", " Kelas ", " waktu " , " tanggal ", "Penggunaan");
+    printf("|------------|------------|------------|------------|------------|\n");
+    
+    for (int i = 0; i < user->bookingCount; ++i) {
+    printf("| %-10s | %s - %s | %d | %-10s |\n", user->bookings[i].room, user->bookings[i].waktuPemakaianawal, user->bookings[i].selesaiPemakaian, user->bookings[i].layanan );
+    printf("|------------|------------|------------|------------|------------|\n");
+    }
+    
+    
+}
+
+
 
 void pembatalanBooking(struct User *user) {
     if (user->bookingCount > 0) {
@@ -355,11 +360,11 @@ int main() {
                     bookingKelas(&users[userIndex]);
                     break;
                 case 2:
-                    displaySchedule();
-                    displayAvailableSchedules();
+                    displayAvailableSchedules(&users[userIndex],&users);
+                    tampilanBooking;
                     break;
                 case 3:
-                    displayPersonalSchedule(&users[userIndex]);
+                    displayAvailableSchedules(&users[userIndex],&users);;
                     break;
                 case 4:
                     pembatalanBooking(&users[userIndex]);
